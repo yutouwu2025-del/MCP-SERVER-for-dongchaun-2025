@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成都山地所东川站降雨数据服务平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            animation: backgroundShift 10s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+            50% { background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db, #9b59b6);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                rgba(255,255,255,0.03) 10deg,
+                transparent 20deg
+            );
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .header p {
+            font-size: 1.6em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        .status-panel {
+            padding: 40px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .status-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .status-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .status-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .status-card:hover::before {
+            left: 100%;
+        }
+
+        .status-card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 12px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .status-dot::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+            }
+        }
+
+        .status-online {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+        .status-online::after {
+            box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7);
+        }
+
+        .status-offline {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        .status-offline::after {
+            box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+        }
+
+        .status-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        .status-warning::after {
+            box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.7);
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 2em;
+            text-align: center;
+            position: relative;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            border-radius: 2px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .tool-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(52, 152, 219, 0.1);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            border-color: rgba(52, 152, 219, 0.3);
+        }
+
+        .tool-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .tool-card p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            transform: scale(1.02);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 8px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 20px rgba(149, 165, 166, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 10px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .result-area {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ecf0f1;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 25px;
+            white-space: pre-wrap;
+            font-family: 'Consolas', 'Monaco', monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .alert-success {
+            color: #155724;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            color: #721c24;
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 2.2em;
+            }
+
+            .status-panel {
+                padding: 20px;
+                gap: 15px;
+            }
+
+            .status-card {
+                padding: 20px;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .tool-card {
+                padding: 20px;
+            }
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #2980b9, #3498db);
+        }
+
+        /* 底部样式 */
+        .footer {
+            margin-top: 40px;
+            padding: 30px 40px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            text-align: center;
+            border-top: 3px solid #3498db;
+        }
+
+        .footer h3 {
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .footer .logo {
+            width: 400px;
+            height: auto;
+            object-fit: contain;
+            filter: brightness(1.1);
+            transition: transform 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .footer .logo:hover {
+            transform: scale(1.1);
+        }
+
+        .footer p {
+            margin: 8px 0;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .footer .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .footer .contact-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .footer .contact-item strong {
+            color: #3498db;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .footer .tech-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .footer .version-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin: 0 5px;
+        }
+
+        @media (max-width: 768px) {
+            .footer {
+                padding: 20px;
+            }
+
+            .footer .contact-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>中国科学院东川泥石流观测研究站</h1>
+            <h1>降雨数据服务平台</h1>
+            <p>🌧️MCP状态监控与数据测试🌧️</p>
+        </div>
+
+        <div class="status-panel">
+            <!-- 第一排 -->
+            <div class="status-row">
+                <div class="status-card">
+                    <h3>🖥️ MCP Server状态</h3>
+                    <div class="status-indicator">
+                        <div class="status-dot status-offline" id="server"></div>
+                        <span id="serverText">检查中...</span>
+                    </div>
+                    <div id="serverInfo">等待检测...</div>
+                </div>
+
+                <div class="status-card">
+                    <h3>🤖 DeepSeek AI状态</h3>
+                    <div class="status-indicator">
+                        <div class="status-dot status-offline" id="ai"></div>
+                        <span id="aiText">检查中...</span>
+                    </div>
+                    <div id="aiInfo">等待检测...</div>
+                </div>
+
+                <div class="status-card">
+                    <h3>🔗 MCP 服务状态</h3>
+                    <div class="status-indicator">
+                        <div class="status-dot status-offline" id="mcp"></div>
+                        <span id="mcpText">检查中...</span>
+                    </div>
+                    <div id="mcpInfo">等待检测...</div>
+                </div>
+
+                <div class="status-card">
+                    <h3>💻 系统信息</h3>
+                    <div id="systemInfo">
+                        <div>MCP 版本: 0.5.x</div>
+                        <div>Python 版本: 检测中...</div>
+                        <div>平台: Windows</div>
+                        <div>时间: <span id="currentTime"></span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第二排 -->
+            <div class="status-row">
+                <div class="status-card">
+                    <h3>📁 数据文件状态</h3>
+                    <div class="status-indicator">
+                        <div class="status-dot status-offline" id="data"></div>
+                        <span id="dataText">检查中...</span>
+                    </div>
+                    <div id="dataInfo">等待检测...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section">
+                <h2>🔧 系统控制</h2>
+                <div style="text-align: center;">
+                    <button class="btn" onclick="checkServerStatus()">🔍 检查服务器状态</button>
+                    <button class="btn" onclick="testDeepSeek()">🤖 测试 DeepSeek API</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📊 数据查询与分析</h2>
+
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <h3>🔍 基本数据查询</h3>
+                        <p>查询指定文件的降雨量数据</p>
+
+                        <div class="form-group">
+                            <label>数据文件:</label>
+                            <select id="dataFile">
+                                <option value="Dabaini">Dabaini</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>记录数量:</label>
+                            <input type="number" id="queryLimit" value="10" min="1" max="100">
+                        </div>
+
+                        <button class="btn" onclick="queryRainfall()">🔍 查询数据</button>
+                    </div>
+
+                    <div class="tool-card">
+                        <h3>🤖 AI 智能分析</h3>
+                        <p>使用人工智能深度分析降雨数据模式和趋势</p>
+
+                        <div class="form-group">
+                            <label>分析问题:</label>
+                            <textarea id="analysisQuestion" rows="3"
+                                placeholder="请输入您的问题，例如：&#10;• 这个地区的降雨模式如何？&#10;• 降雨量的变化趋势是什么？&#10;• 哪些月份降雨最多？"></textarea>
+                        </div>
+
+                        <button class="btn" onclick="analyzeRainfall()">🤖 AI 分析</button>
+                    </div>
+
+                    <div class="tool-card">
+                        <h3>📈 统计摘要</h3>
+                        <p>生成全面的数据统计报告，包含基础统计和分布分析</p>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="includeAiAnalysis">
+                                包含 AI 增强分析
+                            </label>
+                        </div>
+
+                        <button class="btn" onclick="getRainfallSummary()">📈 生成统计摘要</button>
+                    </div>
+
+                    <div class="tool-card">
+                        <h3>⚡ 极端事件检测</h3>
+                        <p>检测异常强降雨事件，分析极端天气模式</p>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>阈值百分位:</label>
+                                <select id="thresholdPercentile">
+                                    <option value="90">90% (较低阈值)</option>
+                                    <option value="95" selected>95% (中等阈值)</option>
+                                    <option value="98">98% (较高阈值)</option>
+                                    <option value="99">99% (极高阈值)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>返回事件数:</label>
+                                <input type="number" id="extremeLimit" value="10" min="1" max="50">
+                            </div>
+                        </div>
+
+                        <button class="btn" onclick="detectExtremeEvents()">⚡ 检测极端事件</button>
+                    </div>
+
+                    <div class="tool-card">
+                        <h3>🌍 全数据综合分析</h3>
+                        <p>对所有降雨数据文件进行综合AI分析，包括地区对比、整体趋势等</p>
+
+                        <div class="form-group">
+                            <label>分析类型:</label>
+                            <select id="allDataAnalysisType">
+                                <option value="general">综合分析</option>
+                                <option value="regional">地区对比分析</option>
+                                <option value="trends">趋势预测分析</option>
+                                <option value="comparison">站点比较分析</option>
+                                <option value="summary">统计摘要分析</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>分析问题 (可选):</label>
+                            <textarea id="allDataQuestion" rows="3"
+                                placeholder="请输入您的问题，例如：&#10;• 各个监测站的降雨特征有什么差异？&#10;• 整个地区的降雨趋势如何？&#10;• 哪个地区降雨量最高？"></textarea>
+                        </div>
+
+                        <button class="btn" onclick="analyzeAllRainfallData()">🌍 全数据分析</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <div class="loading-text">处理中，请稍候...</div>
+            </div>
+
+            <div id="resultArea"></div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载时自动执行
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 页面已加载，开始初始化...');
+            updateCurrentTime();
+
+            // 立即开始状态检查
+            setTimeout(() => {
+                console.log('🔍 开始自动状态检查...');
+                checkServerStatus();
+            }, 500);
+
+            // 每30秒更新时间
+            setInterval(updateCurrentTime, 30000);
+        });
+
+        // 更新当前时间
+        function updateCurrentTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString();
+        }
+
+        // 显示加载状态
+        function showLoading() {
+            const loading = document.getElementById('loading');
+            if (loading) loading.style.display = 'block';
+
+            const resultArea = document.getElementById('resultArea');
+            if (resultArea) resultArea.innerHTML = '';
+        }
+
+        // 隐藏加载状态
+        function hideLoading() {
+            const loading = document.getElementById('loading');
+            if (loading) loading.style.display = 'none';
+        }
+
+        // 显示结果
+        function showResult(result, isError = false) {
+            hideLoading();
+            const resultArea = document.getElementById('resultArea');
+            if (resultArea) {
+                if (isError) {
+                    resultArea.innerHTML = `<div class="alert alert-danger"><strong>❌ 错误:</strong><br>${result}</div>`;
+                } else {
+                    resultArea.innerHTML = `<div class="alert alert-success">✅ ${result}</div>`;
+                }
+            }
+        }
+
+        // 更新状态指示器
+        function updateStatus(elementId, status, text) {
+            const dot = document.getElementById(elementId);
+            const textElement = document.getElementById(elementId + 'Text');
+
+            if (dot) {
+                dot.className = 'status-dot status-' + status;
+            } else {
+                console.error('找不到状态点元素:', elementId);
+            }
+
+            if (textElement) {
+                textElement.textContent = text;
+            } else {
+                console.error('找不到状态文本元素:', elementId + 'Text');
+            }
+        }
+
+        // 检查服务器状态
+        async function checkServerStatus() {
+            console.log('🔍 开始检查服务器状态...');
+            showLoading();
+
+            try {
+                const response = await fetch('/api/status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({}),
+                    cache: 'no-cache'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📊 收到状态数据:', data);
+
+                    // 更新服务器状态
+                    updateStatus('server', 'online', '运行中');
+                    const serverInfo = document.getElementById('serverInfo');
+                    if (serverInfo) {
+                        serverInfo.innerHTML = `✅ 服务器正常运行<br>版本: ${data.server?.version || '1.0.0'}<br>端口: ${data.server?.port || 8081}`;
+                    }
+
+                    // 更新AI状态
+                    const aiConfigured = data.ai?.configured === true;
+                    updateStatus('ai', aiConfigured ? 'online' : 'warning', aiConfigured ? 'API已配置' : 'API未配置');
+                    const aiInfo = document.getElementById('aiInfo');
+                    if (aiInfo) {
+                        aiInfo.innerHTML = `${aiConfigured ? '✅' : '⚠️'} ${data.ai?.provider || 'DeepSeek'} API<br>模型: ${data.ai?.model || 'deepseek-chat'}<br>状态: ${aiConfigured ? 'API已配置' : 'API未配置'}`;
+                    }
+
+                    // 更新数据文件状态
+                    const fileCount = data.data?.files_found || 0;
+                    const hasFiles = fileCount > 0;
+                    updateStatus('data', hasFiles ? 'online' : 'warning', hasFiles ? '数据可用' : '无数据文件');
+                    const dataInfo = document.getElementById('dataInfo');
+                    if (dataInfo) {
+                        let infoText = `${hasFiles ? '✅' : '⚠️'} 找到 ${fileCount} 个数据文件`;
+                        if (data.data?.files && data.data.files.length > 0) {
+                            infoText += `<br>文件: ${data.data.files.join(', ')}`;
+                        }
+                        if (data.data?.file_types && data.data.file_types.length > 0) {
+                            infoText += `<br>格式: ${data.data.file_types.join(', ')}`;
+                        }
+                        if (data.data?.total_records > 0) {
+                            infoText += `<br>总记录数: ${data.data.total_records}`;
+                        }
+                        dataInfo.innerHTML = infoText;
+                    }
+
+                    // 更新数据文件选择框
+                    const dataFileSelect = document.getElementById('dataFile');
+                    if (dataFileSelect && data.data?.files && data.data.files.length > 0) {
+                        // 保存当前选择的值
+                        const currentValue = dataFileSelect.value;
+
+                        // 清空现有选项
+                        dataFileSelect.innerHTML = '';
+
+                        // 添加所有可用的数据文件
+                        data.data.files.forEach(filename => {
+                            const option = document.createElement('option');
+                            option.value = filename;
+                            option.textContent = filename;
+                            dataFileSelect.appendChild(option);
+                        });
+
+                        // 如果之前的选择仍然存在，恢复选择；否则选择第一个
+                        if (data.data.files.includes(currentValue)) {
+                            dataFileSelect.value = currentValue;
+                        } else {
+                            dataFileSelect.value = data.data.files[0];
+                        }
+
+                        console.log('✅ 数据文件选择框已更新，可用文件:', data.data.files);
+                    }
+
+                    // 更新MCP连接服务状态
+                    const mcpAvailable = data.mcp?.tools_available === true;
+                    const mcpStatus = mcpAvailable ? 'online' : 'warning';
+                    const mcpText = mcpAvailable ? 'MCP服务就绪' : 'MCP服务异常';
+                    updateStatus('mcp', mcpStatus, mcpText);
+                    const mcpInfo = document.getElementById('mcpInfo');
+                    if (mcpInfo) {
+                        let mcpInfoText = `${mcpAvailable ? '✅' : '⚠️'} MCP连接服务`;
+                        if (mcpAvailable) {
+                            mcpInfoText += `<br>可用工具: ${data.mcp.tools_count || 0} 个`;
+                            mcpInfoText += `<br>状态: ${data.mcp.status || 'unknown'}`;
+                        } else {
+                            mcpInfoText += `<br>状态: 服务不可用`;
+                        }
+                        mcpInfo.innerHTML = mcpInfoText;
+                    }
+
+                    // 更新系统信息
+                    const systemInfo = document.getElementById('systemInfo');
+                    if (systemInfo) {
+                        systemInfo.innerHTML = `
+                            <div>MCP 版本: ${data.system?.mcp_version || '0.5.x'}</div>
+                            <div>Python 版本: ${data.system?.python_version || '3.x'}</div>
+                            <div>平台: ${data.system?.platform || 'Windows'}</div>
+                            <div>时间: ${new Date().toLocaleString()}</div>
+                        `;
+                    }
+
+                    showResult('状态检查完成 - 系统运行正常');
+
+                } else {
+                    setAllStatusOffline('服务器响应失败');
+                    showResult(`连接失败: HTTP ${response.status}`, true);
+                }
+
+            } catch (error) {
+                console.error('❌ 状态检查异常:', error);
+                setAllStatusOffline('连接异常');
+                showResult('无法连接到服务器: ' + error.message, true);
+            }
+        }
+
+        // 设置所有状态为离线
+        function setAllStatusOffline(reason) {
+            updateStatus('server', 'offline', '连接失败');
+            updateStatus('ai', 'offline', '无法检测');
+            updateStatus('data', 'offline', '无法检测');
+            updateStatus('mcp', 'offline', '无法检测');
+
+            const serverInfo = document.getElementById('serverInfo');
+            if (serverInfo) serverInfo.innerHTML = `❌ ${reason}<br>请检查服务器是否运行`;
+
+            const aiInfo = document.getElementById('aiInfo');
+            if (aiInfo) aiInfo.innerHTML = `❌ ${reason}`;
+
+            const dataInfo = document.getElementById('dataInfo');
+            if (dataInfo) dataInfo.innerHTML = `❌ ${reason}`;
+
+            const mcpInfo = document.getElementById('mcpInfo');
+            if (mcpInfo) mcpInfo.innerHTML = `❌ ${reason}`;
+        }
+
+        // 测试 DeepSeek API
+        async function testDeepSeek() {
+            showLoading();
+
+            try {
+                const response = await fetch('/api/test-deepseek', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                let result = `<div class="result-area">DeepSeek API 测试结果:
+
+状态: ${data.status === 'success' ? '✅ 成功' : '❌ 失败'}
+消息: ${data.message}`;
+
+                if (data.model) {
+                    result += `\n模型: ${data.model}`;
+                }
+
+                if (data.test_response) {
+                    result += `\n响应预览: ${data.test_response}`;
+                }
+
+                if (data.error) {
+                    result += `\n错误信息: ${data.error}`;
+                }
+
+                result += '</div>';
+                document.getElementById('resultArea').innerHTML = result;
+                hideLoading();
+
+            } catch (error) {
+                console.error('DeepSeek测试失败:', error);
+                showResult('DeepSeek API 测试失败: ' + error.message, true);
+            }
+        }
+
+        // 查询降雨数据
+        async function queryRainfall() {
+            showLoading();
+
+            try {
+                const filename = document.getElementById('dataFile').value;
+                const limit = parseInt(document.getElementById('queryLimit').value) || 10;
+
+                const response = await fetch('/api/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        filename: filename,
+                        limit: limit,
+                        filters: {}
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                let result = `<div class="result-area">📊 数据查询结果:
+
+文件: ${data.filename || filename}
+匹配记录数: ${data.total_matching_records || 0}
+返回记录数: ${data.returned_records || 0}
+${data.is_truncated ? '⚠️ 结果已截断' : ''}
+
+数据预览:
+${'='.repeat(80)}`;
+
+                if (data.data && data.data.length > 0) {
+                    data.data.forEach((record, index) => {
+                        result += `\n${index + 1}. 日期: ${record.date || 'N/A'}, 地区: ${record.region || 'N/A'}, 降雨量: ${record.rainfall || 'N/A'}mm`;
+                    });
+                } else {
+                    result += '\n⚠️ 没有找到匹配的数据';
+                }
+
+                result += '</div>';
+                document.getElementById('resultArea').innerHTML = result;
+                hideLoading();
+
+            } catch (error) {
+                showResult('数据查询失败: ' + error.message, true);
+            }
+        }
+
+        // AI 分析降雨数据
+        async function analyzeRainfall() {
+            const question = document.getElementById('analysisQuestion').value.trim();
+            if (!question) {
+                showResult('请输入分析问题', true);
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const filename = document.getElementById('dataFile').value;
+
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        filename: filename,
+                        question: question
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                let result = `<div class="result-area">🤖 AI 分析结果:
+
+文件: ${data.filename || filename}
+问题: ${question}
+
+AI 分析:
+${'='.repeat(80)}
+${data.analysis || '分析结果为空'}`;
+
+                if (data.data_summary) {
+                    result += `\n\n📊 数据概览:
+记录数: ${data.data_summary.total_records || 'N/A'}
+时间范围: ${data.data_summary.date_range || 'N/A'}`;
+                }
+
+                result += '</div>';
+                document.getElementById('resultArea').innerHTML = result;
+                hideLoading();
+
+            } catch (error) {
+                showResult('AI 分析失败: ' + error.message, true);
+            }
+        }
+
+        // 获取统计摘要
+        async function getRainfallSummary() {
+            showLoading();
+
+            try {
+                const filename = document.getElementById('dataFile').value;
+                const includeAi = document.getElementById('includeAiAnalysis').checked;
+
+                const response = await fetch('/api/summary', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        filename: filename,
+                        include_ai_analysis: includeAi
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const summary = data.summary || {};
+
+                let result = `<div class="result-area">📈 统计摘要:
+
+文件: ${summary.filename || filename}
+总记录数: ${summary.total_records || 'N/A'}
+数据列: ${(summary.columns || []).join(', ') || 'N/A'}`;
+
+                if (summary.date_range) {
+                    result += `\n时间范围: ${summary.date_range.start} 到 ${summary.date_range.end}`;
+                }
+
+                if (summary.rainfall_stats) {
+                    const stats = summary.rainfall_stats;
+                    result += `\n\n🌧️ 降雨量统计:
+${'='.repeat(40)}
+最小值: ${stats.min || 'N/A'}mm
+最大值: ${stats.max || 'N/A'}mm
+平均值: ${stats.mean ? stats.mean.toFixed(2) : 'N/A'}mm
+总计: ${stats.total ? stats.total.toFixed(2) : 'N/A'}mm`;
+                }
+
+                if (summary.region_stats) {
+                    result += `\n\n🗺️ 地区统计:
+${'='.repeat(40)}`;
+                    Object.entries(summary.region_stats).forEach(([region, count]) => {
+                        result += `\n${region}: ${count} 条记录`;
+                    });
+                }
+
+                if (data.ai_analysis) {
+                    result += `\n\n🤖 AI 分析:
+${'='.repeat(80)}
+${data.ai_analysis}`;
+                }
+
+                result += '</div>';
+                document.getElementById('resultArea').innerHTML = result;
+                hideLoading();
+
+            } catch (error) {
+                showResult('统计摘要失败: ' + error.message, true);
+            }
+        }
+
+        // 检测极端事件
+        async function detectExtremeEvents() {
+            showLoading();
+
+            try {
+                const filename = document.getElementById('dataFile').value;
+                const threshold = parseInt(document.getElementById('thresholdPercentile').value) || 95;
+                const limit = parseInt(document.getElementById('extremeLimit').value) || 10;
+
+                const response = await fetch('/api/extreme', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        filename: filename,
+                        threshold_percentile: threshold,
+                        limit: limit
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                let result = `<div class="result-area">⚡ 极端事件检测结果:
+
+文件: ${data.filename || filename}
+阈值设定: ${data.threshold_percentile || threshold}百分位
+阈值数值: ${data.threshold_value ? data.threshold_value.toFixed(2) : 'N/A'}mm
+极端事件总数: ${data.total_extreme_events || 0}`;
+
+                if (data.extreme_events && data.extreme_events.length > 0) {
+                    result += `\n\n🌪️ 极端事件详情:
+${'='.repeat(80)}`;
+
+                    data.extreme_events.forEach((event, index) => {
+                        result += `\n${index + 1}. 降雨量: ${event.rainfall ? event.rainfall.toFixed(2) : 'N/A'}mm`;
+                        result += `, 百分位: ${event.percentile ? event.percentile.toFixed(1) : 'N/A'}%`;
+                        if (event.date) result += `, 日期: ${event.date}`;
+                        if (event.region) result += `, 地区: ${event.region}`;
+                    });
+                } else {
+                    result += `\n\n⚠️ 在指定阈值下未发现极端事件`;
+                }
+
+                if (data.statistics) {
+                    const stats = data.statistics;
+                    result += `\n\n📊 统计信息:
+${'='.repeat(40)}
+事件频率: ${stats.frequency_percentage ? stats.frequency_percentage.toFixed(2) : 'N/A'}%
+平均强度: ${stats.average_intensity ? stats.average_intensity.toFixed(2) : 'N/A'}mm
+最大强度: ${stats.max_intensity ? stats.max_intensity.toFixed(2) : 'N/A'}mm`;
+                }
+
+                result += '</div>';
+                document.getElementById('resultArea').innerHTML = result;
+                hideLoading();
+
+            } catch (error) {
+                showResult('极端事件检测失败: ' + error.message, true);
+            }
+        }
+
+        // 全数据综合分析
+        async function analyzeAllRainfallData() {
+            showLoading();
+            try {
+                const analysisType = document.getElementById('allDataAnalysisType').value;
+                const question = document.getElementById('allDataQuestion').value.trim();
+
+                const response = await fetch('/api/analyze-all', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        analysis_type: analysisType,
+                        question: question || null
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                let result = `<div class="result-area">🌍 全数据综合分析结果:
+
+分析类型: ${data.analysis_type || '综合分析'}
+数据范围: ${data.data_overview?.total_files || 0} 个文件, ${data.data_overview?.total_records || 0} 条记录
+分析模型: ${data.model_used || 'deepseek-chat'}`;
+
+                if (data.data_overview) {
+                    const overview = data.data_overview;
+
+                    if (overview.date_range) {
+                        result += `\n数据时间范围: ${overview.date_range.start || 'N/A'} 至 ${overview.date_range.end || 'N/A'}`;
+                    }
+
+                    if (overview.regions && overview.regions.length > 0) {
+                        result += `\n涉及地区: ${overview.regions.slice(0, 10).join(', ')}${overview.regions.length > 10 ? ' 等' : ''}`;
+                    }
+
+                    if (overview.rainfall_stats) {
+                        const stats = overview.rainfall_stats;
+                        result += `\n\n📊 整体统计:
+${'='.repeat(60)}
+总降雨量: ${stats.total ? stats.total.toFixed(2) : 'N/A'}mm
+平均降雨量: ${stats.mean ? stats.mean.toFixed(2) : 'N/A'}mm
+最大降雨量: ${stats.max ? stats.max.toFixed(2) : 'N/A'}mm
+最小降雨量: ${stats.min ? stats.min.toFixed(2) : 'N/A'}mm
+标准差: ${stats.std ? stats.std.toFixed(2) : 'N/A'}mm`;
+                    }
+                }
+
+                if (data.success && data.analysis) {
+                    result += `\n\n🤖 AI 分析结果:
+${'='.repeat(80)}
+${data.analysis}`;
+                }
+
+                if (data.data_overview?.file_summaries) {
+                    result += `\n\n📋 各文件摘要:
+${'='.repeat(60)}`;
+                    Object.entries(data.data_overview.file_summaries).slice(0, 5).forEach(([filename, summary]) => {
+                        result += `\n• ${filename}: ${summary.records} 条记录`;
+                        if (summary.rainfall_summary) {
+                            result += `, 平均降雨: ${summary.rainfall_summary.mean.toFixed(2)}mm`;
+                        }
+                    });
+
+                    if (Object.keys(data.data_overview.file_summaries).length > 5) {
+                        result += `\n  ... 还有 ${Object.keys(data.data_overview.file_summaries).length - 5} 个文件`;
+                    }
+                }
+
+                if (!data.success) {
+                    result += `\n\n❌ 分析失败: ${data.error || '未知错误'}`;
+                }
+
+                result += '</div>';
+                document.getElementById('resultArea').innerHTML = result;
+                hideLoading();
+
+            } catch (error) {
+                console.error('全数据分析失败:', error);
+                showResult('全数据综合分析失败: ' + error.message, true);
+            }
+        }
+
+        // 页面加载时自动检查状态
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 页面已加载，自动检查服务器状态...');
+            // 延迟1秒后自动检查状态，确保页面完全加载
+            setTimeout(() => {
+                checkServerStatus();
+            }, 1000);
+        });
+    </script>
+
+    <!-- 底部信息 -->
+    <div class="footer">
+        <h3><img src="logo.png" alt="东川站logo" class="logo"></h3>
+        <div class="tech-info">
+            <p>
+                ⚡ 技术栈: Python 3.8+ | MCP 0.5.2 | DeepSeek AI | pandas | HTML5/CSS3 | JavaScript ES6
+            </p>
+            <p>
+                © 2025 山地科学数据中心.本项目仅供学习和研究使用.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

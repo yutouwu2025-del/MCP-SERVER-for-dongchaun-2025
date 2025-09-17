@@ -1,0 +1,1 @@
+# Config module for rainfall MCP server

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "rainfall-query": {
+      "command": "python",
+      "args": [
+        "C:\\Users\\Administrator\\Desktop\\MCP SERVER\\start_server.py"
+      ],
+      "cwd": "C:\\Users\\Administrator\\Desktop\\MCP SERVER"
+    }
+  }
+}

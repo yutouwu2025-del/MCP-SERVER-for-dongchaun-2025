@@ -1,0 +1,20 @@
+# DeepSeek API 配置文件
+# 请在下方配置你的DeepSeek API密钥
+
+# API基础URL（通常不需要修改）
+base_url: https://api.deepseek.com
+
+# 你的DeepSeek API密钥（请替换为实际的密钥）
+api_token: sk-c18976c9770c49d58eeabb6399c77f29
+
+# API请求超时时间（秒）
+timeout: 60
+
+# 最大重试次数
+max_retries: 3
+
+# 配置说明：
+# 1. 将 "your-deepseek-api-key-here" 替换为你的实际API密钥
+# 2. API密钥格式通常是：sk-xxxxxxxxxxxxxxxxxxxxxxxxx
+# 3. 如果没有API密钥，请访问 https://platform.deepseek.com 注册获取
+# 4. 配置完成后重启服务器即可生效

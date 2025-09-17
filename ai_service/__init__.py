@@ -1,0 +1,1 @@
+# AI service module for rainfall data analysis

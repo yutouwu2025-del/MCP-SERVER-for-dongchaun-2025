@@ -1,0 +1,11 @@
+# MCP Server for Rainfall Data Query
+# Using stable MCP version 0.5.x
+
+mcp==0.5.2
+pandas>=1.5.0
+openpyxl>=3.1.0
+httpx>=0.24.0
+pydantic>=1.10.0
+python-dotenv>=1.0.0
+uvloop>=0.17.0; sys_platform != "win32"
+asyncio>=3.4.3; sys_platform == "win32"
