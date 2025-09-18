@@ -219,21 +219,6 @@ python start_server.py
 }
 ```
 
-### MCP客户端配置
-
-#### Trae Desktop配置
-在 `%APPDATA%\\Claude\\claude_desktop_config.json` 中：
-```json
-{
-  "mcpServers": {
-    "rainfall-query": {
-      "command": "python",
-      "args": ["C:\\\\path\\\\to\\\\your\\\\project\\\\start_server.py"],
-      "cwd": "C:\\\\path\\\\to\\\\your\\\\project"
-    }
-  }
-}
-```
 ## 🔧 MCP工具列表
 
 ### 1. `query_rainfall` - 数据查询
