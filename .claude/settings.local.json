@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(claude mcp add:*)",
+      "Bash(claude mcp:*)",
+      "Bash(tasklist)",
+      "Bash(findstr:*)",
+      "Bash(dir:*)",
+      "Bash(powershell:*)",
+      "Bash(timeout:*)",
+      "Bash(del test_data_reader.py test_web_api.py test_mcp_direct.py)",
+      "Bash(ren:*)",
+      "Bash(curl:*)",
+      "Bash(find:*)",
+      "WebFetch(domain:nsl.imde.ac.cn)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
