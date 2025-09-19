@@ -6,16 +6,12 @@
 [![Python](https://img.shields.io/badge/Python-3.8+-green.svg)](https://python.org)
 [![AI Model](https://img.shields.io/badge/AI-DeepSeek-orange.svg)](https://www.deepseek.com)
 
-<<<<<<< HEAD
 **中国科学院东川泥石流观测研究站**降雨量数据查询和分析服务器，集成 DeepSeek AI 模型进行智能数据分析
-=======
-**中国科学院东川泥石流观测研究站**降雨量数据查询和分析服务MCP，集成 DeepSeek AI 模型进行智能数据分析
->>>>>>> 7c5c92943d0f19f2ad3fea1da52e94c78f39b343
 
 ---
 
 ## 🛠️ 项目简介：
-MCP是Model Context Protocol的简写，是由Anthropic开发的开放标准协议，主要用于AI模型与外部工具和数据源的安全连接。由于MCP的服务状态不便查看，顺带开发这个平台用于对其服务状态进行监控，同时还集成应用模型状态、MCP工具状态、数据文件和系统信息的显示，同时还集成降雨量数据的查询和分析功能，方便数据分析和读取功能的验证。
+MCP是Model Context Protocol的简写，是由Anthropic开发的开放标准协议，主要用于AI模型与外部工具和数据源的安全连接。由于MCP的服务状态不便查看，顺带开发这个平台用于对其服务状态进行监控，同时还集成应用模型状态、MCP工具状态、数据文件和系统信息的显示，同时还集成降雨量数据的查询和分析功能，方便进行数据功能的验证。
 
 
 ## 🛠️ 技术栈
@@ -51,7 +47,7 @@ MCP是Model Context Protocol的简写，是由Anthropic开发的开放标准协�
 │                         用户界面层                                │
 ├─────────────────┬─────────────────┬─────────────────────────────┤
 │   Web浏览器界面    │   MCP客户端      │      API调用接口              │
-│   (8081端口)     │   (IDE工具等)     │    (HTTP REST)              │
+│   (8081端口)     │  (Claude等)     │    (HTTP REST)              │
 └─────────────────┴─────────────────┴─────────────────────────────┘
                            │
 ┌─────────────────────────────────────────────────────────────────┐
@@ -223,7 +219,6 @@ python start_server.py
 }
 ```
 
-<<<<<<< HEAD
 ### MCP客户端配置
 
 #### Trae Desktop配置
@@ -239,8 +234,6 @@ python start_server.py
   }
 }
 ```
-=======
->>>>>>> 7c5c92943d0f19f2ad3fea1da52e94c78f39b343
 ## 🔧 MCP工具列表
 
 ### 1. `query_rainfall` - 数据查询
