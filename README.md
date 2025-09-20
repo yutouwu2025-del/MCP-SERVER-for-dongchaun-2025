@@ -1,4 +1,4 @@
-# 🌧️ 中国科学院东川泥石流观测研究站降雨数据服务平台 🌧️
+# 🌧️ 中国科学院东川泥石流观测研究站降雨数据服务 🌧️
 
 > 基于 Model Context Protocol (MCP) 的数据服务状态监控与测试
 
@@ -35,7 +35,7 @@ The dataset is provided by National Cryosphere Desert Data Center. (http://www.n
 
 In works such as paper, patent, and monograph, please indicate the data source. In the acknowledgments section of Chinese publications, include the statement “感谢中国科学院东川泥石流观测研究站为本研究提供了相关数据” . In the acknowledgments section of English publications, please state, “We would like to thank the Dongchuan Debris Flow Observation and Research Station (DDFORS), Chinese Academy of Sciences, for providing the field observation data for this study.”For any data-related issues, please contact Li Wei (weili@imde.ac.cn) and Dongri Song (drsong@imde.ac.cn).
 
-```markdown
+```
 
 ```
 
