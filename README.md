@@ -1,17 +1,51 @@
-# 🌧️ 成都山地所东川站降雨数据服务平台 🌧️
+# 🌧️ 中国科学院东川泥石流观测研究站降雨数据服务平台 🌧️
 
-> 基于 Model Context Protocol (MCP) 的状态监控与数据测试
+> 基于 Model Context Protocol (MCP) 的数据服务状态监控与测试
 
 [![MCP Version](https://img.shields.io/badge/MCP-0.5.2-blue.svg)](https://github.com/modelcontextprotocol/python-sdk)
 [![Python](https://img.shields.io/badge/Python-3.8+-green.svg)](https://python.org)
 [![AI Model](https://img.shields.io/badge/AI-DeepSeek-orange.svg)](https://www.deepseek.com)
 
-**中国科学院东川泥石流观测研究站**降雨量数据查询和分析服务器，集成 DeepSeek AI 模型进行智能数据分析
+降雨量数据查询和分析服务器，集成 DeepSeek AI 模型进行智能数据分析
 
 ---
 
 ## 🛠️ 项目简介：
-MCP是Model Context Protocol的简写，是由Anthropic开发的开放标准协议，主要用于AI模型与外部工具和数据源的安全连接。由于MCP的服务状态不便查看，顺带开发这个平台用于对其服务状态进行监控，同时还集成应用模型状态、MCP工具状态、数据文件和系统信息的显示，同时还集成降雨量数据的查询和分析功能，方便进行数据功能的验证。
+```
+MCP是Model Context Protocol的简写，由Anthropic开发的开放标准协议，主要用于AI模型与外部工具和数据源的安全连接。由于MCP的服务状态不便掌握，于是开发这个平台用于对其服务状态进行监控，同时还集成应用模型状态、MCP工具状态、数据文件和系统信息的显示，同时还集成降雨量数据的查询和分析功能，方便进行服务功能进行验证。
+```
+
+##### 🔍中国科学院、水利部成都山地灾害与环境研究所（http://www.imde.ac.cn）
+
+```
+中国科学院、水利部成都山地灾害与环境研究所（简称“成都山地所”），拥有山地自然灾害与工程安全重点实验室（中国科学院）、中国科学院山地灾害与地表过程重点实验室、中国科学院山地表生过程与生态调控重点实验室、山区发展研究中心、数字山地与遥感应用中心五个研究单元，设有四川省山区减灾工程技术研究中心、公共技术中心、山地科学数据中心、学术期刊中心四个支撑平台，建立了以云南东川泥石流国家野外科学观测研究站、四川贡嘎山森林生态系统国家野外科学观测研究站、四川盐亭农田生态系统国家野外科学观测研究站等3个国家重点野外台站和其他6个院所级台站构成的长江上游-西藏高原环境灾害与生态安全观测平台，共建国家工程实验室1个、自然资源部技术创新中心2个，建有1个480m2的科技展馆。
+```
+
+##### 🔍中国科学院东川泥石流观测研究站（http://nsl.imde.ac.cn）
+
+```
+中国科学院东川泥石流观测研究站（简称“东川站”）位于云南省昆明市东川区绿茂乡境内蒋家沟下游。东川站作为国家重点野外台站，以泥石流观测和实验为基础，开展泥石流基础理论和泥石流减灾技术研究，引领了国内泥石流学科发展，是国内外泥石流研究与防治的重要基地。
+```
+
+##### 📊数据来源
+
+```
+English name:Rainfall data at Jiangjiag Ravine and Xiaojiang River Catchment, Yunnan, China
+CSTR:11738.11.NCDC.DDFORS.DB6716.2025 
+DOI:10.12072/ncdc.ddfors.db6716.2025 
+source site:State Field Observation and Research Station of Debris Fow in Dongchuan, Yunnan
+contributors:Song Dongri , Zhong Wei , Li Xiaoyu , Wei Li
+For the achievements published in English, please refer to the following specifications： The dataset is provided by National Cryosphere Desert Data Center. (http://www.ncdc.ac.cn).
+```
+
+```
+In works such as paper, patent, and monograph, please indicate the data source. In the acknowledgments section of Chinese publications, include the statement “感谢中国科学院东川泥石流观测研究站为本研究提供了相关数据” . In the acknowledgments section of English publications, please state, “We would like to thank the Dongchuan Debris Flow Observation and Research Station (DDFORS), Chinese Academy of Sciences, for providing the field observation data for this study.”For any data-related issues, please contact Li Wei (weili@imde.ac.cn) and Dongri Song (drsong@imde.ac.cn).
+```
+
+
+
+![](D:\MCP SERVER\image\site.png)
+
 
 
 ## 🛠️ 技术栈
@@ -155,7 +189,7 @@ MCP SERVER/
 ### MCP连接流程
 
 #### 1. 服务器启动
-```bash
+​```bash
 python start_server.py
 # 服务器监听 stdio服务，等待客户端连接
 ```
@@ -408,5 +442,9 @@ python start_server.py
 - **本地处理**: 降雨数据仅在本地系统中处理
 - **加密传输**: 与AI服务的通信使用HTTPS加密
 - **访问控制**: 仅授权用户可访问系统功能
+
+
+
+[![Creative Commons License](https://www.ncdc.ac.cn/static/assets/image/license_cc.png)](http://creativecommons.org/licenses/by/4.0/)  This work is licensed under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/).
 
 ---
