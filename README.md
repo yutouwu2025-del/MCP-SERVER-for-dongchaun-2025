@@ -44,7 +44,7 @@ In works such as paper, patent, and monograph, please indicate the data source. 
 
 
 
-![](MCP SERVER\image\site.png)
+![](\MCP SERVER\image\site.png)
 
 
 
